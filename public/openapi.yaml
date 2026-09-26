@@ -1,8 +1,8 @@
 openapi: 3.1.1
 info:
-  title: Finance API Hub — MarketGrep Sentiment APIs
+  title: FinEqual — Financial Information Equality APIs
   version: 1.0.0
-  description: 精选金融数据接口的机器可读说明。数据版权与使用条款以 MarketGrep 原站为准。
+  description: 金融信息平权——免费金融信息 API 聚合平台。数据版权与使用条款以 MarketGrep 原站为准。
   license:
     name: CC BY 4.0
     url: https://creativecommons.org/licenses/by/4.0/
@@ -20,6 +20,9 @@ paths:
       summary: 获取最新 WallStreetBets 市场情绪报告
       operationId: getLatestSentimentReport
       tags: [市场情绪]
+      externalDocs:
+        description: WallStreetBets 美股每日散户情绪报告原网页
+        url: https://lite.marketgrep.com/zh/wsb
       responses:
         "200":
           description: 最新报告
@@ -33,9 +36,12 @@ paths:
     servers:
       - url: https://lite.marketgrep.com
     get:
-      summary: 获取近期市场情绪报告索引
+      summary: 获取近期历史市场情绪报告
       operationId: getSentimentReportHistory
       tags: [市场情绪]
+      externalDocs:
+        description: WallStreetBets 美股每日散户情绪报告原网页
+        url: https://lite.marketgrep.com/zh/wsb
       responses:
         "200":
           description: 历史报告摘要列表
@@ -59,6 +65,10 @@ components:
       type: object
       required: [report_date, report_events, report_markdown]
       properties:
+        _license: { type: string }
+        _attribution: { type: string }
+        _canonical: { type: string, format: uri }
+        _terms: { type: string, format: uri }
         report_date: { type: string, format: date }
         updated_at: { type: string, format: date-time }
         session: { type: string, examples: [postclose] }
@@ -66,6 +76,12 @@ components:
           type: array
           items: { $ref: "#/components/schemas/ReportEvent" }
         report_markdown: { type: string }
+        report_markdown_en: { type: string }
+        prices_refreshed_at: { type: string, format: date-time }
+        has_deep_analysis: { type: boolean }
+        wsb_posts_count: { type: integer }
+        wsb_comments_count: { type: integer }
+        quality_checks: { type: object, additionalProperties: true }
         market_mood: { type: object, additionalProperties: true }
         top_tickers:
           type: array
@@ -76,10 +92,10 @@ components:
       type: object
       required: [report_date, session, events]
       properties:
-        updated_at: { type: string }
+        updated_at: { type: string, format: date-time }
         report_date: { type: string, format: date }
-        session: { type: string }
-        mood: { type: string }
+        session: { type: string, enum: [premarket, postclose] }
+        mood: { type: string, enum: [bullish, neutral, bearish] }
         score: { type: number }
         posts: { type: integer }
         comments: { type: integer }
@@ -92,6 +108,10 @@ components:
       type: object
       required: [count, runs]
       properties:
+        _license: { type: string }
+        _attribution: { type: string }
+        _canonical: { type: string, format: uri }
+        _terms: { type: string, format: uri }
         count: { type: integer }
         runs:
           type: array

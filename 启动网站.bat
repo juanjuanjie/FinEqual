@@ -1,8 +1,10 @@
 @echo off
-chcp 65001 >nul
 cd /d "%~dp0"
 set "PATH=D:\environment;%PATH%"
-echo 正在启动 Finance API Hub...
-echo 启动成功后，请在浏览器打开终端中显示的 Local 地址。
+echo Starting FinEqual documentation site...
+echo Keep this window open while viewing the site.
+echo Open the Local URL shown below in your browser.
 call "D:\environment\npm.cmd" run dev
+echo.
+echo The site server has stopped.
 pause
