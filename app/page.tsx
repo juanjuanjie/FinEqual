@@ -6,6 +6,7 @@ const dailyUrl = "https://www.marketgrep.com/api/sentiment-report";
 const historyUrl = "https://lite.marketgrep.com/api/sentiment-report/history";
 const sourcePageUrl = "https://lite.marketgrep.com/zh/wsb";
 const thirteenFSourceUrl = "https://lite.marketgrep.com/zh/13f";
+const thirteenFManagerSourceUrl = "https://lite.marketgrep.com/zh/13f/managers/berkshire-hathaway";
 const managersUrl = "https://lite.marketgrep.com/api/13f/managers";
 const managerDetailUrl = "https://lite.marketgrep.com/api/13f/managers/{slug}";
 const licenseUrl = "https://lite.marketgrep.com/license/";
@@ -325,7 +326,7 @@ export default function Home() {
           <p className="lead">按机构 <code>slug</code> 返回完整持仓、环比调仓、历史季度矩阵、策略标签与研究叙事。13F 只覆盖申报范围内的证券，<code>reported_value</code> 不应直接当作机构总资产 AUM。</p>
           <div className="endpoint-bar"><span>GET</span><code>{managerDetailUrl}</code><CopyButton value={managerDetailUrl} compact /></div>
           <div className="path-parameter"><span>路径参数</span><code>slug</code><p>来自机构列表的 <code>managers[].slug</code>，例如 <code>berkshire-hathaway</code>。</p></div>
-          <ApiAttribution sourceUrl={thirteenFSourceUrl} sourceLabel="MarketGrep · 机构持仓 13F 研究页面" />
+          <ApiAttribution sourceUrl={thirteenFManagerSourceUrl} sourceLabel="MarketGrep · 伯克希尔·哈撒韦 13F 机构详情页" />
           <h3>响应字段</h3>
           <div className="field-table"><div className="field-head"><span>分类</span><span>字段</span><span>类型</span><span>说明</span></div>{managerDetailFields.map(([scope, name, type, desc]) => <div className="field-row" key={name}><span className="field-scope">{scope}</span><code>{name}</code><span>{type}</span><p>{desc}</p></div>)}</div>
           <h3>最小响应示例</h3>

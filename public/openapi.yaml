@@ -78,8 +78,8 @@ paths:
       operationId: get13FManagerDetail
       tags: [13F 机构持仓]
       externalDocs:
-        description: MarketGrep 机构持仓 13F 研究原网页
-        url: https://lite.marketgrep.com/zh/13f
+        description: MarketGrep 伯克希尔·哈撒韦 13F 机构详情页
+        url: https://lite.marketgrep.com/zh/13f/managers/berkshire-hathaway
       parameters:
         - name: slug
           in: path
