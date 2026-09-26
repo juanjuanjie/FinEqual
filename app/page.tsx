@@ -9,6 +9,7 @@ const thirteenFSourceUrl = "https://lite.marketgrep.com/zh/13f";
 const thirteenFManagerSourceUrl = "https://lite.marketgrep.com/zh/13f/managers/berkshire-hathaway";
 const managersUrl = "https://lite.marketgrep.com/api/13f/managers";
 const managerDetailUrl = "https://lite.marketgrep.com/api/13f/managers/{slug}";
+const managerDetailExampleUrl = "https://lite.marketgrep.com/api/13f/managers/berkshire-hathaway";
 const licenseUrl = "https://lite.marketgrep.com/license/";
 const finvizFinanceRepoUrl = "https://github.com/lit26/finvizfinance";
 const finvizFinanceDocsUrl = "https://finvizfinance.readthedocs.io/en/latest/";
@@ -201,6 +202,10 @@ function CopyButton({ value, compact = false }: { value: string; compact?: boole
   return <button className={compact ? "copy compact" : "copy"} onClick={copy} aria-label="复制内容">{copied ? "已复制" : "复制"}</button>;
 }
 
+function OpenEndpointButton({ href }: { href: string }) {
+  return <a className="endpoint-open" href={href} target="_blank" rel="noreferrer" aria-label="在新标签页打开接口">打开 ↗</a>;
+}
+
 function ApiAttribution({ sourceUrl = sourcePageUrl, sourceLabel = "MarketGrep · WSB 美股舆情页面" }: { sourceUrl?: string; sourceLabel?: string }) {
   return <div className="api-attribution" aria-label="接口来源与许可">
     <span><b>数据来源</b><a href={sourceUrl} target="_blank" rel="noreferrer">{sourceLabel} ↗</a></span>
@@ -280,7 +285,7 @@ export default function Home() {
       <div className="api-subsection" id="daily">
         <div className="section-heading"><div><span className="section-number">01.1 / 接口</span><h2>最新报告 API</h2></div><span className="status"><i /> 在线</span></div>
         <p className="lead">抓取社区讨论并汇总成结构化的每日市场报告。<code>report_events</code> 适合做信息流、时间线和提醒；<code>report_markdown</code> 适合直接渲染全文。</p>
-        <div className="endpoint-bar"><span>GET</span><code>{dailyUrl}</code><CopyButton value={dailyUrl} compact /></div>
+        <div className="endpoint-bar"><span>GET</span><code>{dailyUrl}</code><CopyButton value={dailyUrl} compact /><OpenEndpointButton href={dailyUrl} /></div>
         <ApiAttribution />
         <h3>响应字段</h3>
         <div className="field-table"><div className="field-head"><span>分类</span><span>字段</span><span>类型</span><span>说明</span></div>{fields.map(([scope, name, type, desc]) => <div className="field-row" key={name}><span className="field-scope">{scope}</span><code>{name}</code><span>{type}</span><p>{desc}</p></div>)}</div>
@@ -299,7 +304,7 @@ export default function Home() {
       <div className="api-subsection" id="history">
         <div className="section-heading"><div><span className="section-number">01.2 / 接口</span><h2>历史报告 API</h2></div><span className="status"><i /> 在线</span></div>
         <p className="lead">获取近期历史报告的摘要列表。适合做报告归档、情绪趋势或关键事件回看；响应不包含每期完整的 <code>report_markdown</code>。</p>
-        <div className="endpoint-bar"><span>GET</span><code>{historyUrl}</code><CopyButton value={historyUrl} compact /></div>
+        <div className="endpoint-bar"><span>GET</span><code>{historyUrl}</code><CopyButton value={historyUrl} compact /><OpenEndpointButton href={historyUrl} /></div>
         <ApiAttribution />
         <h3>响应字段</h3>
         <div className="field-table"><div className="field-head"><span>分类</span><span>字段</span><span>类型</span><span>说明</span></div>{historyFields.map(([scope, name, type, desc]) => <div className="field-row" key={name}><span className="field-scope">{scope}</span><code>{name}</code><span>{type}</span><p>{desc}</p></div>)}</div>
@@ -342,7 +347,7 @@ export default function Home() {
         <div className="api-subsection" id="managers">
           <div className="section-heading"><div><span className="section-number">02.1 / 接口</span><h2>机构列表 API</h2></div><span className="status"><i /> 季度更新</span></div>
           <p className="lead">返回精选机构管理人及其最新 13F 申报季度。适合制作机构目录、筛选器和聪明钱概览，并为详情接口取得 <code>slug</code>。</p>
-          <div className="endpoint-bar"><span>GET</span><code>{managersUrl}</code><CopyButton value={managersUrl} compact /></div>
+          <div className="endpoint-bar"><span>GET</span><code>{managersUrl}</code><CopyButton value={managersUrl} compact /><OpenEndpointButton href={managersUrl} /></div>
           <ApiAttribution sourceUrl={thirteenFSourceUrl} sourceLabel="MarketGrep · 机构持仓 13F 研究页面" />
           <h3>响应字段</h3>
           <div className="field-table"><div className="field-head"><span>分类</span><span>字段</span><span>类型</span><span>说明</span></div>{managerFields.map(([scope, name, type, desc]) => <div className="field-row" key={name}><span className="field-scope">{scope}</span><code>{name}</code><span>{type}</span><p>{desc}</p></div>)}</div>
@@ -374,7 +379,7 @@ export default function Home() {
         <div className="api-subsection" id="manager-detail">
           <div className="section-heading"><div><span className="section-number">02.2 / 接口</span><h2>13F 机构持仓详情 API</h2></div><span className="status"><i /> 季度更新</span></div>
           <p className="lead">按机构 <code>slug</code> 返回完整持仓、环比调仓、历史季度矩阵、策略标签与研究叙事。13F 只覆盖申报范围内的证券，<code>reported_value</code> 不应直接当作机构总资产 AUM。</p>
-          <div className="endpoint-bar"><span>GET</span><code>{managerDetailUrl}</code><CopyButton value={managerDetailUrl} compact /></div>
+          <div className="endpoint-bar"><span>GET</span><code>{managerDetailUrl}</code><CopyButton value={managerDetailUrl} compact /><OpenEndpointButton href={managerDetailExampleUrl} /></div>
           <div className="path-parameter"><span>路径参数</span><code>slug</code><p>来自机构列表的 <code>managers[].slug</code>，例如 <code>berkshire-hathaway</code>。</p></div>
           <ApiAttribution sourceUrl={thirteenFManagerSourceUrl} sourceLabel="MarketGrep · 伯克希尔·哈撒韦 13F 机构详情页" />
           <h3>响应字段</h3>
