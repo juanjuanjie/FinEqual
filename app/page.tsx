@@ -15,11 +15,6 @@ const finvizFinanceRepoUrl = "https://github.com/lit26/finvizfinance";
 const finvizFinanceDocsUrl = "https://finvizfinance.readthedocs.io/en/latest/";
 const finvizFinanceLicenseUrl = "https://github.com/lit26/finvizfinance/blob/master/LICENSE";
 const finvizUrl = "https://finviz.com/";
-const akshareRepoUrl = "https://github.com/akfamily/akshare";
-const akshareDocsUrl = "https://akshare.akfamily.xyz/data/others/others.html";
-const akshareStockDocsUrl = "https://akshare.akfamily.xyz/data/stock/stock.html";
-const eastmoneyAShareUrl = "https://quote.eastmoney.com/center/gridlist.html#hs_a_board";
-const sinaAShareUrl = "https://vip.stock.finance.sina.com.cn/mkt/#hs_a";
 const basePath = import.meta.env.BASE_URL === "/" ? "" : import.meta.env.BASE_URL.replace(/\/$/, "");
 const assetPath = (path: string) => `${basePath}${path}`;
 const snippets = {
@@ -95,16 +90,6 @@ blogs = feed["blogs"]
 
 print(news.head())
 print(blogs.head())`;
-const akshareEastmoneySnippet = `import akshare as ak
-
-# 东方财富：全部沪深京 A 股实时行情
-quotes = ak.stock_zh_a_spot_em()
-print(quotes[["代码", "名称", "最新价", "涨跌幅", "成交额"]].head())`;
-const akshareSinaSnippet = `import akshare as ak
-
-# 新浪财经：全部沪深京 A 股实时行情
-quotes = ak.stock_zh_a_spot()
-print(quotes[["代码", "名称", "最新价", "涨跌幅", "买入", "卖出"]].head())`;
 const fields = [
   ["来源", "_license", "string", "数据复用许可摘要；完整条款以 _terms 指向页面为准"],
   ["来源", "_attribution", "string", "展示数据时使用的来源署名文本"],
@@ -203,9 +188,6 @@ const searchItems = [
   { name: "股票报价、图表与基本面分析", meta: "Python · Quote", href: "#stock-quote", keywords: "quote ticker chart fundament description ratings 股票报价 图表 基本面" },
   { name: "内幕信息", meta: "Python · Insider", href: "#insider-information", keywords: "insider 内幕 内部人交易 owner trade" },
   { name: "新闻与情绪趋势", meta: "Python · News", href: "#news-sentiment", keywords: "news blogs sentiment 新闻 情绪 趋势" },
-  { name: "A 股行情数据", meta: "开源工具 · AKShare", href: "#a-share-market", keywords: "a股 行情 akshare 沪深京 股票 数据源" },
-  { name: "东方财富实时行情", meta: "Python · 全市场", href: "#akshare-eastmoney", keywords: "东方财富 stock_zh_a_spot_em 实时行情" },
-  { name: "新浪财经实时行情", meta: "Python · 全市场", href: "#akshare-sina", keywords: "新浪财经 stock_zh_a_spot 实时行情" },
   { name: "API 收录协议", meta: "OpenAPI 3.1", href: "#standard", keywords: "接入规范 收录标准 协议" },
   { name: "使用须知", meta: "来源 · 授权 · 请求边界", href: "#quality", keywords: "非投资建议 署名 版权 频率 缓存" },
 ];
@@ -270,10 +252,6 @@ export default function Home() {
           <div className="nav-children"><a href="#stock-quote"><span className="method-dot">PY</span> 股票报价、图表与基本面</a><a href="#insider-information"><span className="method-dot">PY</span> 内幕信息</a><a href="#news-sentiment"><span className="method-dot">PY</span> 新闻与情绪趋势</a></div>
         </details>
         <details className="nav-group" open>
-          <summary>A 股行情数据</summary>
-          <div className="nav-children"><a href="#akshare-eastmoney"><span className="method-dot">PY</span> 东方财富实时行情</a><a href="#akshare-sina"><span className="method-dot">PY</span> 新浪财经实时行情</a></div>
-        </details>
-        <details className="nav-group" open>
           <summary>维护者指南</summary>
           <div className="nav-children"><a href="#standard">API 收录协议</a><a href="#quality">使用须知</a></div>
         </details>
@@ -294,7 +272,7 @@ export default function Home() {
         <h1>让金融信息 <span>不再有门槛</span></h1>
         <p className="hero-copy">免费金融信息 API 聚合平台。为中文开发者筛选开放、实用的数据接口，并提供清晰的字段说明与可直接运行的示例。</p>
         <div className="hero-actions"><a className="primary-button" href="#quickstart">开始调用 <span>→</span></a><a className="secondary-button" href={assetPath("/openapi.yaml")} download>下载 OpenAPI 规范</a></div>
-        <div className="stats"><div><strong>4</strong><span>已收录数据类型</span></div><div><strong>4</strong><span>免费 API 接口</span></div><div><strong>2</strong><span>开源 Python 工具</span></div></div>
+        <div className="stats"><div><strong>3</strong><span>已收录数据类型</span></div><div><strong>4</strong><span>免费 API 接口</span></div><div><strong>1</strong><span>开源 Python 工具</span></div></div>
       </section>
 
       <section className="content-section provider-section" id="quickstart">
@@ -468,34 +446,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="content-section provider-section" id="a-share-market">
-        <div className="provider-heading"><span className="section-number">04 / A 股行情数据</span><div><h2>AKShare A 股行情</h2><p>AKShare 是面向 Python 的开源财经数据工具，统一封装了多个公开数据源。本页列举东方财富和新浪财经两个来源，均可获取沪深京 A 股全市场实时行情。</p><div className="source-reference"><span>官方文档</span><a href={akshareStockDocsUrl} target="_blank" rel="noreferrer"><strong>AKShare 股票数据 · A 股</strong><small>AKShare</small><b>↗</b></a></div></div></div>
-        <div className="endpoint-bar package-bar"><span>PIP</span><code>pip install akshare --upgrade</code><CopyButton value="pip install akshare --upgrade" compact /></div>
-        <div className="api-attribution" aria-label="AKShare 项目资料">
-          <span><b>开源项目</b><a href={akshareRepoUrl} target="_blank" rel="noreferrer">GitHub · akfamily/akshare ↗</a></span>
-          <span><b>A 股文档</b><a href={akshareStockDocsUrl} target="_blank" rel="noreferrer">股票数据字典 ↗</a></span>
-          <span><b>更多数据</b><a href={akshareDocsUrl} target="_blank" rel="noreferrer">另类数据字典 ↗</a></span>
-        </div>
-        <p className="tool-note">项目性质：本地安装的 Python 数据采集库，并非 AKShare 自建行情源。接口的可用性、频率限制和字段可能随上游网站变化，生产使用时应做好缓存、异常处理与降频。</p>
-
-        <div className="api-subsection tool-subsection" id="akshare-eastmoney">
-          <div className="section-heading"><div><span className="section-number">04.1 / 东方财富</span><h2>沪深京 A 股实时行情</h2></div><span className="status"><i /> 全市场</span></div>
-          <p className="lead"><code>stock_zh_a_spot_em()</code> 单次返回全部沪深京 A 股上市公司的实时行情，常用字段包括代码、名称、最新价、涨跌幅、成交量、成交额、最高价和最低价。</p>
-          <div className="source-reference"><span>数据来源</span><a href={eastmoneyAShareUrl} target="_blank" rel="noreferrer"><strong>东方财富 · 沪深京 A 股行情</strong><small>Eastmoney</small><b>↗</b></a></div>
-          <div className="code-card tool-code"><div className="code-tabs"><div><button className="selected">Python</button></div><CopyButton value={akshareEastmoneySnippet} compact /></div><pre><code>{akshareEastmoneySnippet}</code></pre></div>
-        </div>
-
-        <div className="api-subsection tool-subsection" id="akshare-sina">
-          <div className="section-heading"><div><span className="section-number">04.2 / 新浪财经</span><h2>沪深京 A 股实时行情</h2></div><span className="status"><i /> 全市场</span></div>
-          <p className="lead"><code>stock_zh_a_spot()</code> 返回沪深京 A 股全市场实时行情，并包含买入价、卖出价、昨收、今开、最高和最低等字段。官方文档提示，重复高频调用可能被新浪暂时封禁 IP，应主动增加请求间隔。</p>
-          <div className="source-reference"><span>数据来源</span><a href={sinaAShareUrl} target="_blank" rel="noreferrer"><strong>新浪财经 · 沪深京 A 股行情</strong><small>Sina Finance</small><b>↗</b></a></div>
-          <div className="code-card tool-code"><div className="code-tabs"><div><button className="selected">Python</button></div><CopyButton value={akshareSinaSnippet} compact /></div><pre><code>{akshareSinaSnippet}</code></pre></div>
-        </div>
-
-      </section>
-
       <section className="content-section standard-section" id="standard">
-        <span className="section-number">05 / 收录协议</span><h2>以后新增 API，都按同一套标准</h2>
+        <span className="section-number">04 / 收录协议</span><h2>以后新增 API，都按同一套标准</h2>
         <p className="lead">本站采用 <strong>OpenAPI 3.1</strong> 描述 HTTP 接口，并用 JSON Schema 定义响应结构。这是行业通用规范，可继续生成文档、客户端和测试，而不是自创格式。</p>
         <div className="principles">
           <article><b>1</b><h3>身份明确</h3><p>写清数据提供方、原始地址、授权方式、许可协议与署名要求。</p></article>
@@ -507,7 +459,7 @@ export default function Home() {
       </section>
 
       <section className="content-section quality" id="quality">
-        <div><span className="section-number">06 / 使用须知</span><h2>数据有来源，使用有边界</h2></div>
+        <div><span className="section-number">05 / 使用须知</span><h2>数据有来源，使用有边界</h2></div>
         <div className="quality-list"><p><strong>非投资建议</strong><span>聚合数据与自动生成内容可能存在延迟、遗漏或偏差，不应单独作为交易依据。</span></p><p><strong>遵守来源许可</strong><span>不同数据源的授权范围、署名和使用要求可能不同，请以对应接口详情及原网站条款为准。</span></p><p><strong>合理请求</strong><span>遵守各数据源的访问限制，避免高频轮询；生产环境建议缓存结果，并为失败请求设置退避重试。</span></p></div>
       </section>
 
