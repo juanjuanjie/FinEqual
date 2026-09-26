@@ -20,7 +20,6 @@ const akshareDocsUrl = "https://akshare.akfamily.xyz/data/others/others.html";
 const akshareStockDocsUrl = "https://akshare.akfamily.xyz/data/stock/stock.html";
 const eastmoneyAShareUrl = "https://quote.eastmoney.com/center/gridlist.html#hs_a_board";
 const sinaAShareUrl = "https://vip.stock.finance.sina.com.cn/mkt/#hs_a";
-const xueqiuStockUrl = "https://xueqiu.com/S/SH513520";
 const basePath = import.meta.env.BASE_URL === "/" ? "" : import.meta.env.BASE_URL.replace(/\/$/, "");
 const assetPath = (path: string) => `${basePath}${path}`;
 const snippets = {
@@ -106,11 +105,6 @@ const akshareSinaSnippet = `import akshare as ak
 # 新浪财经：全部沪深京 A 股实时行情
 quotes = ak.stock_zh_a_spot()
 print(quotes[["代码", "名称", "最新价", "涨跌幅", "买入", "卖出"]].head())`;
-const akshareXueqiuSnippet = `import akshare as ak
-
-# 雪球：单只证券实时行情
-quote = ak.stock_individual_spot_xq(symbol="SH600000")
-print(quote)`;
 const fields = [
   ["来源", "_license", "string", "数据复用许可摘要；完整条款以 _terms 指向页面为准"],
   ["来源", "_attribution", "string", "展示数据时使用的来源署名文本"],
@@ -212,7 +206,6 @@ const searchItems = [
   { name: "A 股行情数据", meta: "开源工具 · AKShare", href: "#a-share-market", keywords: "a股 行情 akshare 沪深京 股票 数据源" },
   { name: "东方财富实时行情", meta: "Python · 全市场", href: "#akshare-eastmoney", keywords: "东方财富 stock_zh_a_spot_em 实时行情" },
   { name: "新浪财经实时行情", meta: "Python · 全市场", href: "#akshare-sina", keywords: "新浪财经 stock_zh_a_spot 实时行情" },
-  { name: "雪球个股行情", meta: "Python · 单只证券", href: "#akshare-xueqiu", keywords: "雪球 stock_individual_spot_xq 个股行情" },
   { name: "API 收录协议", meta: "OpenAPI 3.1", href: "#standard", keywords: "接入规范 收录标准 协议" },
   { name: "使用须知", meta: "来源 · 授权 · 请求边界", href: "#quality", keywords: "非投资建议 署名 版权 频率 缓存" },
 ];
@@ -278,7 +271,7 @@ export default function Home() {
         </details>
         <details className="nav-group" open>
           <summary>A 股行情数据</summary>
-          <div className="nav-children"><a href="#akshare-eastmoney"><span className="method-dot">PY</span> 东方财富实时行情</a><a href="#akshare-sina"><span className="method-dot">PY</span> 新浪财经实时行情</a><a href="#akshare-xueqiu"><span className="method-dot">PY</span> 雪球个股行情</a></div>
+          <div className="nav-children"><a href="#akshare-eastmoney"><span className="method-dot">PY</span> 东方财富实时行情</a><a href="#akshare-sina"><span className="method-dot">PY</span> 新浪财经实时行情</a></div>
         </details>
         <details className="nav-group" open>
           <summary>维护者指南</summary>
@@ -476,7 +469,7 @@ export default function Home() {
       </section>
 
       <section className="content-section provider-section" id="a-share-market">
-        <div className="provider-heading"><span className="section-number">04 / A 股行情数据</span><div><h2>AKShare A 股行情</h2><p>AKShare 是面向 Python 的开源财经数据工具，统一封装了多个公开数据源。本页先列举东方财富、新浪财经和雪球三个来源，覆盖全市场实时行情与单只证券行情。</p><div className="source-reference"><span>官方文档</span><a href={akshareStockDocsUrl} target="_blank" rel="noreferrer"><strong>AKShare 股票数据 · A 股</strong><small>AKShare</small><b>↗</b></a></div></div></div>
+        <div className="provider-heading"><span className="section-number">04 / A 股行情数据</span><div><h2>AKShare A 股行情</h2><p>AKShare 是面向 Python 的开源财经数据工具，统一封装了多个公开数据源。本页列举东方财富和新浪财经两个来源，均可获取沪深京 A 股全市场实时行情。</p><div className="source-reference"><span>官方文档</span><a href={akshareStockDocsUrl} target="_blank" rel="noreferrer"><strong>AKShare 股票数据 · A 股</strong><small>AKShare</small><b>↗</b></a></div></div></div>
         <div className="endpoint-bar package-bar"><span>PIP</span><code>pip install akshare --upgrade</code><CopyButton value="pip install akshare --upgrade" compact /></div>
         <div className="api-attribution" aria-label="AKShare 项目资料">
           <span><b>开源项目</b><a href={akshareRepoUrl} target="_blank" rel="noreferrer">GitHub · akfamily/akshare ↗</a></span>
@@ -499,12 +492,6 @@ export default function Home() {
           <div className="code-card tool-code"><div className="code-tabs"><div><button className="selected">Python</button></div><CopyButton value={akshareSinaSnippet} compact /></div><pre><code>{akshareSinaSnippet}</code></pre></div>
         </div>
 
-        <div className="api-subsection tool-subsection" id="akshare-xueqiu">
-          <div className="section-heading"><div><span className="section-number">04.3 / 雪球</span><h2>单只证券实时行情</h2></div><span className="status"><i /> 个股</span></div>
-          <p className="lead"><code>stock_individual_spot_xq(symbol="SH600000")</code> 获取指定证券的最新行情。代码需要带市场前缀，也可用于 A 股场内基金、A 股指数以及部分美股证券。</p>
-          <div className="source-reference"><span>数据来源</span><a href={xueqiuStockUrl} target="_blank" rel="noreferrer"><strong>雪球 · 个股行情中心</strong><small>Xueqiu</small><b>↗</b></a></div>
-          <div className="code-card tool-code"><div className="code-tabs"><div><button className="selected">Python</button></div><CopyButton value={akshareXueqiuSnippet} compact /></div><pre><code>{akshareXueqiuSnippet}</code></pre></div>
-        </div>
       </section>
 
       <section className="content-section standard-section" id="standard">
