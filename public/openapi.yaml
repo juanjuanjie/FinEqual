@@ -51,6 +51,53 @@ paths:
                 $ref: "#/components/schemas/HistoryResponse"
         default:
           description: 上游服务错误
+  /api/13f/managers:
+    servers:
+      - url: https://lite.marketgrep.com
+    get:
+      summary: 获取精选 13F 机构管理人列表
+      operationId: list13FManagers
+      tags: [机构持仓]
+      externalDocs:
+        description: MarketGrep 机构持仓 13F 研究原网页
+        url: https://lite.marketgrep.com/zh/13f
+      responses:
+        "200":
+          description: 机构管理人及最新 13F 申报概览
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ManagerListResponse"
+        default:
+          description: 上游服务错误
+  /api/13f/managers/{slug}:
+    servers:
+      - url: https://lite.marketgrep.com
+    get:
+      summary: 获取单个机构的持仓、季度变化与研究叙事
+      operationId: get13FManagerDetail
+      tags: [机构持仓]
+      externalDocs:
+        description: MarketGrep 机构持仓 13F 研究原网页
+        url: https://lite.marketgrep.com/zh/13f
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: 机构列表 managers[].slug 字段
+          schema: { type: string }
+          example: berkshire-hathaway
+      responses:
+        "200":
+          description: 机构 13F 详情
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ManagerDetailResponse"
+        "404":
+          description: 未找到对应机构
+        default:
+          description: 上游服务错误
 components:
   schemas:
     ReportEvent:
@@ -117,3 +164,129 @@ components:
           type: array
           items: { $ref: "#/components/schemas/HistoryRun" }
       additionalProperties: true
+    ManagerBadges:
+      type: object
+      properties:
+        holdings_count: { type: integer }
+        top5_weight: { type: number }
+        turnover: { type: number }
+        option_ratio: { type: number }
+    ManagerSignal:
+      type: object
+      properties:
+        kind: { type: string, enum: [new, add, reduce] }
+        ticker: { type: string }
+        name: { type: string }
+        name_cn: { type: string }
+        weight: { type: number }
+        weight_change: { type: number }
+    ManagerSummary:
+      type: object
+      required: [slug, display_name, firm_name, cik, latest_period, latest_filing_date, reported_value]
+      properties:
+        slug: { type: string }
+        display_name: { type: string }
+        firm_name: { type: string }
+        display_name_cn: { type: [string, "null"] }
+        firm_name_cn: { type: [string, "null"] }
+        cik: { type: string }
+        category: { type: string }
+        axis: { type: string }
+        latest_period: { type: string, examples: [2026Q2] }
+        latest_filing_date: { type: string, format: date }
+        reported_value: { type: integer, description: 13F 报告持仓市值（美元），不等同于 AUM }
+        badges: { $ref: "#/components/schemas/ManagerBadges" }
+        description_en: { type: string }
+        description_cn: { type: string }
+        tags_en: { type: array, items: { type: string } }
+        tags_cn: { type: array, items: { type: string } }
+        top_holding_ticker: { type: [string, "null"] }
+        top_holding_weight: { type: number }
+        quarters_tracked: { type: integer }
+        pivot_score: { type: number }
+        signals:
+          type: [object, "null"]
+          properties:
+            top_new: { oneOf: [{ $ref: "#/components/schemas/ManagerSignal" }, { type: "null" }] }
+            top_add: { oneOf: [{ $ref: "#/components/schemas/ManagerSignal" }, { type: "null" }] }
+            top_reduce: { oneOf: [{ $ref: "#/components/schemas/ManagerSignal" }, { type: "null" }] }
+            new_count: { type: integer }
+            exit_count: { type: integer }
+    ManagerListResponse:
+      type: object
+      required: [managers]
+      properties:
+        _license: { type: string }
+        _attribution: { type: string }
+        _canonical: { type: string, format: uri }
+        _terms: { type: string, format: uri }
+        managers:
+          type: array
+          items: { $ref: "#/components/schemas/ManagerSummary" }
+    Holding:
+      type: object
+      properties:
+        rank: { type: integer }
+        ticker: { type: string }
+        cusip: { type: string }
+        name: { type: string }
+        name_cn: { type: string }
+        title_of_class: { type: string }
+        put_call: { type: [string, "null"] }
+        shares_or_principal: { type: number }
+        previous_shares_or_principal: { type: number }
+        shares_change: { type: number }
+        reported_value: { type: integer }
+        weight: { type: number }
+        previous_weight: { type: number }
+        weight_change: { type: number }
+        status: { type: string }
+        is_etf: { type: boolean }
+        sector: { type: [string, "null"] }
+        trend_30d: { type: array, items: { type: number } }
+        return_1y: { type: [number, "null"] }
+    ManagerStat:
+      type: object
+      required: [manager_slug, report_period, filing_date, holdings]
+      properties:
+        manager_slug: { type: string }
+        report_period: { type: string }
+        filing_date: { type: string, format: date }
+        accession_number: { type: string }
+        sec_url: { type: string, format: uri }
+        scale: { type: object, additionalProperties: true }
+        scale_arc: { type: array, items: { type: object, additionalProperties: true } }
+        new_positions: { type: array, items: { $ref: "#/components/schemas/Holding" } }
+        largest_adds: { type: array, items: { $ref: "#/components/schemas/Holding" } }
+        largest_reduces: { type: array, items: { $ref: "#/components/schemas/Holding" } }
+        exits: { type: array, items: { $ref: "#/components/schemas/Holding" } }
+        holdings: { type: array, items: { $ref: "#/components/schemas/Holding" } }
+        top_holdings: { type: array, items: { $ref: "#/components/schemas/Holding" } }
+        option_holdings: { type: array, items: { $ref: "#/components/schemas/Holding" } }
+        persistent_core: { type: array, items: { type: object, additionalProperties: true } }
+        quarterly_matrix_periods: { type: array, items: { type: string } }
+        quarterly_matrix: { type: array, items: { type: object, additionalProperties: true } }
+        strategy_label: { type: string }
+        is_pivot_quarter: { type: boolean }
+        pivot_score: { type: number }
+        theme_exposure: { type: object, additionalProperties: { type: number } }
+        theme_exposure_prev: { type: object, additionalProperties: { type: number } }
+    ManagerDetailResponse:
+      type: object
+      required: [manager, stat, chapters]
+      properties:
+        _license: { type: string }
+        _attribution: { type: string }
+        _canonical: { type: string, format: uri }
+        _terms: { type: string, format: uri }
+        manager: { $ref: "#/components/schemas/ManagerSummary" }
+        stat: { $ref: "#/components/schemas/ManagerStat" }
+        about: { type: object, additionalProperties: true }
+        chapters:
+          type: array
+          items:
+            type: object
+            properties:
+              stat: { $ref: "#/components/schemas/ManagerStat" }
+              narrative: { type: object, additionalProperties: true }
+        cumulative_growth_pct: { type: number }

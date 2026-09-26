@@ -6,7 +6,7 @@ export default defineConfig({
   publicDir: "../public",
   plugins: [react()],
   build: {
-    outDir: "../pages-dist",
+    outDir: "../pages-output",
     emptyOutDir: true,
   },
   root: "github-pages",

@@ -5,6 +5,9 @@ import { useMemo, useState } from "react";
 const dailyUrl = "https://www.marketgrep.com/api/sentiment-report";
 const historyUrl = "https://lite.marketgrep.com/api/sentiment-report/history";
 const sourcePageUrl = "https://lite.marketgrep.com/zh/wsb";
+const thirteenFSourceUrl = "https://lite.marketgrep.com/zh/13f";
+const managersUrl = "https://lite.marketgrep.com/api/13f/managers";
+const managerDetailUrl = "https://lite.marketgrep.com/api/13f/managers/{slug}";
 const licenseUrl = "https://lite.marketgrep.com/license/";
 const basePath = import.meta.env.BASE_URL === "/" ? "" : import.meta.env.BASE_URL.replace(/\/$/, "");
 const assetPath = (path: string) => `${basePath}${path}`;
@@ -30,6 +33,29 @@ console.log(data.report_markdown);`,
   --url ${dailyUrl} \\
   --header 'Accept: application/json' \\
   --header 'User-Agent: Mozilla/5.0'`,
+};
+const thirteenFSnippets = {
+  Python: `import requests
+
+base_url = "${managersUrl}"
+managers = requests.get(base_url, timeout=30).json()["managers"]
+
+slug = managers[0]["slug"]
+detail = requests.get(f"{base_url}/{slug}", timeout=30).json()
+print(detail["manager"]["display_name"])
+print(detail["stat"]["top_holdings"][:5])`,
+  JavaScript: `const managers = await fetch("${managersUrl}")
+  .then((response) => response.json());
+
+const slug = managers.managers[0].slug;
+const detail = await fetch(
+  \`https://lite.marketgrep.com/api/13f/managers/\${slug}\`
+).then((response) => response.json());
+
+console.table(detail.stat.top_holdings.slice(0, 5));`,
+  cURL: `curl --request GET \\
+  --url ${managersUrl} \\
+  --header 'Accept: application/json'`,
 };
 const fields = [
   ["来源", "_license", "string", "数据复用许可摘要；完整条款以 _terms 指向页面为准"],
@@ -70,10 +96,50 @@ const historyFields = [
   ["质量", "runs[].quality", "object", "可选质量检查项，例如重复引用、内容过短、稀疏标的及新闻样本统计"],
 ];
 
+const managerFields = [
+  ["来源", "_license / _terms", "string · URI", "数据许可摘要与完整使用条款地址"],
+  ["响应", "managers", "array<object>", "精选机构管理人列表"],
+  ["身份", "managers[].slug", "string", "机构详情接口使用的稳定路径标识"],
+  ["身份", "display_name / firm_name", "string", "管理人展示名与申报机构名称"],
+  ["身份", "display_name_cn / firm_name_cn", "string · nullable", "可选的中文管理人名与机构名"],
+  ["身份", "cik", "string", "SEC Central Index Key，保留前导零"],
+  ["分类", "category / axis", "string", "策略类别与站内精选维度"],
+  ["季度", "latest_period", "string", "最新持仓报告季度，例如 2026Q2"],
+  ["季度", "latest_filing_date", "string · date", "最新 13F 向 SEC 提交的日期"],
+  ["规模", "reported_value", "integer", "13F 报告持仓市值，单位为美元；不等同于机构 AUM"],
+  ["指标", "badges", "object", "持仓数量、前五大集中度、换手率与期权占比"],
+  ["画像", "description_cn / tags_cn", "string / array", "中文机构简介与策略标签"],
+  ["头部持仓", "top_holding_ticker / top_holding_weight", "string / number", "第一大持仓代码及其组合权重"],
+  ["变化", "signals", "object · nullable", "最大新建仓、加仓、减仓及新进/退出数量"],
+];
+
+const managerDetailFields = [
+  ["机构", "manager", "object", "机构身份、最新季度、简介、标签及概览信号"],
+  ["季度", "stat.report_period / filing_date", "string", "当前报告季度与 SEC 申报日期"],
+  ["原始申报", "stat.accession_number / sec_url", "string / URI", "SEC 申报编号与 EDGAR 原始页面"],
+  ["规模", "stat.scale", "object", "报告市值、持仓数、Top 1/Top 5、期权及 ETF 占比"],
+  ["趋势", "stat.scale_arc", "array<object>", "逐季度规模、持仓数量和集中度演变"],
+  ["调仓", "stat.new_positions", "array<object>", "本季度新建仓列表"],
+  ["调仓", "stat.largest_adds / largest_reduces", "array<object>", "主要加仓与减仓列表"],
+  ["调仓", "stat.exits", "array<object>", "本季度退出的持仓列表"],
+  ["持仓", "stat.holdings / top_holdings", "array<object>", "完整持仓与前十大持仓，含权重、股数和环比变化"],
+  ["衍生品", "stat.option_holdings", "array<object>", "13F 中披露的 PUT/CALL 名义持仓"],
+  ["长期核心", "stat.persistent_core", "array<object>", "持续持有季度数及历史权重区间"],
+  ["季度矩阵", "stat.quarterly_matrix", "array<object>", "各标的跨季度权重、市值与股数序列"],
+  ["策略", "stat.strategy_label / pivot_score", "string / number", "组合风格标签与季度换挡分数"],
+  ["主题", "stat.theme_exposure", "object", "金融、消费、平台、能源等主题暴露"],
+  ["研究", "about", "object", "机构背景、投资风格、标签及人工核验状态"],
+  ["叙事", "chapters", "array<object>", "各季度统计快照与 narrative 研究解读"],
+  ["表现", "cumulative_growth_pct", "number", "页面研究口径下的累计增长比例"],
+];
+
 const searchItems = [
   { name: "WSB 美股舆情", meta: "数据类型 · WallStreetBets", href: "#quickstart", keywords: "wsb wallstreetbets reddit marketgrep 美股 舆情 市场情绪" },
   { name: "最新报告 API", meta: "GET · 实时", href: "#daily", keywords: "每日 市场情绪 sentiment report report_events report_markdown" },
   { name: "历史报告 API", meta: "GET · 历史", href: "#history", keywords: "历史索引 历史情绪 历史报告 history runs" },
+  { name: "机构持仓 13F", meta: "数据类型 · 聪明钱", href: "#thirteen-f", keywords: "13f 机构 持仓 基金 sec 聪明钱 marketgrep" },
+  { name: "机构列表 API", meta: "GET · 季度", href: "#managers", keywords: "13f managers 机构列表 基金经理" },
+  { name: "机构持仓详情 API", meta: "GET · 季度", href: "#manager-detail", keywords: "13f manager slug holdings 调仓 季度变化 narrative" },
   { name: "API 收录协议", meta: "OpenAPI 3.1", href: "#standard", keywords: "接入规范 收录标准 协议" },
   { name: "使用须知", meta: "来源 · 授权 · 请求边界", href: "#quality", keywords: "非投资建议 署名 版权 频率 缓存" },
 ];
@@ -88,15 +154,16 @@ function CopyButton({ value, compact = false }: { value: string; compact?: boole
   return <button className={compact ? "copy compact" : "copy"} onClick={copy} aria-label="复制内容">{copied ? "已复制" : "复制"}</button>;
 }
 
-function ApiAttribution() {
+function ApiAttribution({ sourceUrl = sourcePageUrl, sourceLabel = "MarketGrep · WSB 美股舆情页面" }: { sourceUrl?: string; sourceLabel?: string }) {
   return <div className="api-attribution" aria-label="接口来源与许可">
-    <span><b>数据来源</b><a href={sourcePageUrl} target="_blank" rel="noreferrer">MarketGrep · WSB 美股舆情页面 ↗</a></span>
+    <span><b>数据来源</b><a href={sourceUrl} target="_blank" rel="noreferrer">{sourceLabel} ↗</a></span>
     <span><b>许可说明</b><a href={licenseUrl} target="_blank" rel="noreferrer">CC BY 4.0 与使用条款 ↗</a></span>
   </div>;
 }
 
 export default function Home() {
   const [language, setLanguage] = useState<keyof typeof snippets>("Python");
+  const [thirteenFLanguage, setThirteenFLanguage] = useState<keyof typeof thirteenFSnippets>("Python");
   const [query, setQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const matches = useMemo(() => {
@@ -125,6 +192,10 @@ export default function Home() {
           <div className="nav-children"><a href="#daily"><span className="method-dot">GET</span> 最新报告</a><a href="#history"><span className="method-dot">GET</span> 历史报告</a></div>
         </details>
         <details className="nav-group" open>
+          <summary>机构持仓</summary>
+          <div className="nav-children"><a href="#managers"><span className="method-dot">GET</span> 机构列表</a><a href="#manager-detail"><span className="method-dot">GET</span> 持仓详情</a></div>
+        </details>
+        <details className="nav-group" open>
           <summary>维护者指南</summary>
           <div className="nav-children"><a href="#standard">API 收录协议</a><a href="#quality">使用须知</a></div>
         </details>
@@ -145,7 +216,7 @@ export default function Home() {
         <h1>让金融信息 <span>不再有门槛</span></h1>
         <p className="hero-copy">免费金融信息 API 聚合平台。为中文开发者筛选开放、实用的数据接口，并提供清晰的字段说明与可直接运行的示例。</p>
         <div className="hero-actions"><a className="primary-button" href="#quickstart">开始调用 <span>→</span></a><a className="secondary-button" href={assetPath("/openapi.yaml")} download>下载 OpenAPI 规范</a></div>
-        <div className="stats"><div><strong>1</strong><span>已收录数据类型</span></div><div><strong>2</strong><span>免费 API 接口</span></div><div><strong>0</strong><span>所需 API Key</span></div></div>
+        <div className="stats"><div><strong>2</strong><span>已收录数据类型</span></div><div><strong>4</strong><span>免费 API 接口</span></div><div><strong>0</strong><span>所需 API Key</span></div></div>
       </section>
 
       <section className="content-section provider-section" id="quickstart">
@@ -210,8 +281,84 @@ export default function Home() {
       </div>
       </section>
 
+      <section className="content-section provider-section" id="thirteen-f">
+        <div className="provider-heading"><span className="section-number">02 / 机构持仓</span><div><h2>MarketGrep 机构持仓 13F 研究</h2><p>13F 是管理规模超过 1 亿美元的机构投资者每季度向 SEC 申报的持仓清单。追踪头部基金的持仓如何逐季演变，以及每一步背后的策略，是观察聪明钱真实动向最清晰的窗口之一。</p><div className="source-reference"><span>原网页</span><a href={thirteenFSourceUrl} target="_blank" rel="noreferrer"><strong>MarketGrep 机构持仓 13F 研究</strong><small>MarketGrep</small><b>↗</b></a></div></div></div>
+        <div className="intro-grid provider-intro">
+          <div><span className="subsection-label">快速开始</span><h3>先选机构，再读取完整持仓</h3><p>先从机构列表取得稳定的 <code>slug</code>，再拼入详情接口。详情响应同时提供 SEC 原始申报链接、逐季持仓变化与研究叙事。</p></div>
+          <div className="code-card"><div className="code-tabs"><div>{Object.keys(thirteenFSnippets).map((item) => <button key={item} className={thirteenFLanguage === item ? "selected" : ""} onClick={() => setThirteenFLanguage(item as keyof typeof thirteenFSnippets)}>{item}</button>)}</div><CopyButton value={thirteenFSnippets[thirteenFLanguage]} compact /></div><pre><code>{thirteenFSnippets[thirteenFLanguage]}</code></pre></div>
+        </div>
+
+        <div className="api-subsection" id="managers">
+          <div className="section-heading"><div><span className="section-number">02.1 / 接口</span><h2>机构列表 API</h2></div><span className="status"><i /> 季度更新</span></div>
+          <p className="lead">返回精选机构管理人及其最新 13F 申报季度。适合制作机构目录、筛选器和聪明钱概览，并为详情接口取得 <code>slug</code>。</p>
+          <div className="endpoint-bar"><span>GET</span><code>{managersUrl}</code><CopyButton value={managersUrl} compact /></div>
+          <ApiAttribution sourceUrl={thirteenFSourceUrl} sourceLabel="MarketGrep · 机构持仓 13F 研究页面" />
+          <h3>响应字段</h3>
+          <div className="field-table"><div className="field-head"><span>分类</span><span>字段</span><span>类型</span><span>说明</span></div>{managerFields.map(([scope, name, type, desc]) => <div className="field-row" key={name}><span className="field-scope">{scope}</span><code>{name}</code><span>{type}</span><p>{desc}</p></div>)}</div>
+          <h3>最小响应示例</h3>
+          <div className="response-card"><div className="response-top"><span><i /> 200 OK</span><span>application/json</span></div><pre><code>{`{
+  "_attribution": "MarketGrep (marketgrep.com)",
+  "_terms": "https://lite.marketgrep.com/license/",
+  "managers": [
+    {
+      "slug": "berkshire-hathaway",
+      "display_name": "Warren Buffett",
+      "firm_name": "Berkshire Hathaway Inc",
+      "cik": "0001067983",
+      "latest_period": "2026Q2",
+      "latest_filing_date": "2026-08-14",
+      "reported_value": 299253556246,
+      "badges": {
+        "holdings_count": 29,
+        "top5_weight": 0.6865,
+        "turnover": 0.0777,
+        "option_ratio": 0
+      },
+      "top_holding_ticker": "AAPL"
+    }
+  ]
+}`}</code></pre></div>
+        </div>
+
+        <div className="api-subsection" id="manager-detail">
+          <div className="section-heading"><div><span className="section-number">02.2 / 接口</span><h2>机构持仓详情 API</h2></div><span className="status"><i /> 季度更新</span></div>
+          <p className="lead">按机构 <code>slug</code> 返回完整持仓、环比调仓、历史季度矩阵、策略标签与研究叙事。13F 只覆盖申报范围内的证券，<code>reported_value</code> 不应直接当作机构总资产 AUM。</p>
+          <div className="endpoint-bar"><span>GET</span><code>{managerDetailUrl}</code><CopyButton value={managerDetailUrl} compact /></div>
+          <div className="path-parameter"><span>路径参数</span><code>slug</code><p>来自机构列表的 <code>managers[].slug</code>，例如 <code>berkshire-hathaway</code>。</p></div>
+          <ApiAttribution sourceUrl={thirteenFSourceUrl} sourceLabel="MarketGrep · 机构持仓 13F 研究页面" />
+          <h3>响应字段</h3>
+          <div className="field-table"><div className="field-head"><span>分类</span><span>字段</span><span>类型</span><span>说明</span></div>{managerDetailFields.map(([scope, name, type, desc]) => <div className="field-row" key={name}><span className="field-scope">{scope}</span><code>{name}</code><span>{type}</span><p>{desc}</p></div>)}</div>
+          <h3>最小响应示例</h3>
+          <div className="response-card"><div className="response-top"><span><i /> 200 OK</span><span>application/json</span></div><pre><code>{`{
+  "manager": {
+    "slug": "berkshire-hathaway",
+    "display_name": "Warren Buffett",
+    "latest_period": "2026Q2"
+  },
+  "stat": {
+    "report_period": "2026Q2",
+    "filing_date": "2026-08-14",
+    "sec_url": "https://www.sec.gov/cgi-bin/browse-edgar?...",
+    "scale": {
+      "reported_value": 299253556246,
+      "holdings_count": 29,
+      "top_5_weight": 0.6865
+    },
+    "top_holdings": [
+      { "rank": 1, "ticker": "AAPL", "weight": 0.2204, "status": "hold" }
+    ],
+    "strategy_label": "Concentrated",
+    "pivot_score": 0.0405
+  },
+  "chapters": [
+    { "narrative": { "one_liner": "Alphabet built to a combined 12.6%" } }
+  ]
+}`}</code></pre></div>
+        </div>
+      </section>
+
       <section className="content-section standard-section" id="standard">
-        <span className="section-number">02 / 收录协议</span><h2>以后新增 API，都按同一套标准</h2>
+        <span className="section-number">03 / 收录协议</span><h2>以后新增 API，都按同一套标准</h2>
         <p className="lead">本站采用 <strong>OpenAPI 3.1</strong> 描述 HTTP 接口，并用 JSON Schema 定义响应结构。这是行业通用规范，可继续生成文档、客户端和测试，而不是自创格式。</p>
         <div className="principles">
           <article><b>1</b><h3>身份明确</h3><p>写清数据提供方、原始地址、授权方式、许可协议与署名要求。</p></article>
@@ -223,7 +370,7 @@ export default function Home() {
       </section>
 
       <section className="content-section quality" id="quality">
-        <div><span className="section-number">03 / 使用须知</span><h2>数据有来源，使用有边界</h2></div>
+        <div><span className="section-number">04 / 使用须知</span><h2>数据有来源，使用有边界</h2></div>
         <div className="quality-list"><p><strong>非投资建议</strong><span>聚合数据与自动生成内容可能存在延迟、遗漏或偏差，不应单独作为交易依据。</span></p><p><strong>遵守来源许可</strong><span>不同数据源的授权范围、署名和使用要求可能不同，请以对应接口详情及原网站条款为准。</span></p><p><strong>合理请求</strong><span>遵守各数据源的访问限制，避免高频轮询；生产环境建议缓存结果，并为失败请求设置退避重试。</span></p></div>
       </section>
 
