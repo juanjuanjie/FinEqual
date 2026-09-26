@@ -13,6 +13,7 @@ const licenseUrl = "https://lite.marketgrep.com/license/";
 const finvizFinanceRepoUrl = "https://github.com/lit26/finvizfinance";
 const finvizFinanceDocsUrl = "https://finvizfinance.readthedocs.io/en/latest/";
 const finvizFinanceLicenseUrl = "https://github.com/lit26/finvizfinance/blob/master/LICENSE";
+const finvizUrl = "https://finviz.com/";
 const basePath = import.meta.env.BASE_URL === "/" ? "" : import.meta.env.BASE_URL.replace(/\/$/, "");
 const assetPath = (path: string) => `${basePath}${path}`;
 const snippets = {
@@ -408,14 +409,15 @@ export default function Home() {
       </section>
 
       <section className="content-section provider-section" id="us-stock-detail">
-        <div className="provider-heading"><span className="section-number">03 / 美股详情</span><div><h2>finvizfinance 美股数据工具</h2><p>finvizfinance 是从 Finviz 获取金融信息的 Python 开源库。本分类按照项目实际能力拆分为三部分：单只股票的报价、图表与基本面分析，全市场内幕交易信息，以及近期金融新闻。</p><div className="source-reference"><span>开源项目</span><a href={finvizFinanceRepoUrl} target="_blank" rel="noreferrer"><strong>lit26/finvizfinance</strong><small>GitHub</small><b>↗</b></a></div></div></div>
+        <div className="provider-heading"><span className="section-number">03 / 美股详情</span><div><h2>finvizfinance 美股数据工具</h2><p>finvizfinance 是从 <a className="inline-source-link" href={finvizUrl} target="_blank" rel="noreferrer">Finviz ↗</a> 获取金融信息的 Python 开源库。本分类按照项目实际能力拆分为三部分：单只股票的报价、图表与基本面分析，全市场内幕交易信息，以及近期金融新闻。</p><div className="source-reference"><span>开源项目</span><a href={finvizFinanceRepoUrl} target="_blank" rel="noreferrer"><strong>lit26/finvizfinance</strong><small>GitHub</small><b>↗</b></a></div></div></div>
         <div className="endpoint-bar package-bar"><span>PIP</span><code>pip install finvizfinance</code><CopyButton value="pip install finvizfinance" compact /></div>
         <div className="api-attribution" aria-label="项目资料与许可">
           <span><b>项目主页</b><a href={finvizFinanceRepoUrl} target="_blank" rel="noreferrer">GitHub · lit26/finvizfinance ↗</a></span>
+          <span><b>原始数据网站</b><a href={finvizUrl} target="_blank" rel="noreferrer">Finviz.com ↗</a></span>
           <span><b>官方文档</b><a href={finvizFinanceDocsUrl} target="_blank" rel="noreferrer">Read the Docs ↗</a></span>
           <span><b>开源许可</b><a href={finvizFinanceLicenseUrl} target="_blank" rel="noreferrer">MIT License ↗</a></span>
         </div>
-        <p className="tool-note">项目性质：本地安装的 Python 数据采集库，并非 HTTP API。数据来自 Finviz，使用时需同时遵守项目许可证和来源网站条款。</p>
+        <p className="tool-note">项目性质：本地安装的 Python 数据采集库，并非 HTTP API。数据来自 <a className="inline-source-link" href={finvizUrl} target="_blank" rel="noreferrer">Finviz ↗</a>，使用时需同时遵守项目许可证和来源网站条款。</p>
 
         <div className="api-subsection tool-subsection" id="stock-quote">
           <div className="section-heading"><div><span className="section-number">03.1 / 个股</span><h2>股票报价、图表与基本面分析</h2></div><span className="status"><i /> Quote</span></div>
@@ -427,14 +429,14 @@ export default function Home() {
 
         <div className="api-subsection tool-subsection" id="insider-information">
           <div className="section-heading"><div><span className="section-number">03.2 / 市场</span><h2>内幕信息</h2></div><span className="status"><i /> Insider</span></div>
-          <p className="lead">获取 Finviz 汇总的内部人交易记录。可以查看最新交易、近一周重点交易或大股东交易，结果以表格形式返回，常见内容包括股票代码、内部人、关系、交易日期、买卖方向、价格、股数与金额。</p>
+          <p className="lead">获取 <a className="inline-source-link" href={finvizUrl} target="_blank" rel="noreferrer">Finviz ↗</a> 汇总的内部人交易记录。可以查看最新交易、近一周重点交易或大股东交易，结果以表格形式返回，常见内容包括股票代码、内部人、关系、交易日期、买卖方向、价格、股数与金额。</p>
           <div className="code-card tool-code"><div className="code-tabs"><div><button className="selected">Python</button></div><CopyButton value={finvizInsiderSnippet} compact /></div><pre><code>{finvizInsiderSnippet}</code></pre></div>
           <div className="path-parameter"><span>option 可选值</span><code>latest</code><p><code>top week</code> 查看本周重点交易；<code>top owner trade</code> 查看大股东交易。</p></div>
         </div>
 
         <div className="api-subsection tool-subsection" id="news-sentiment">
           <div className="section-heading"><div><span className="section-number">03.3 / 市场</span><h2>新闻与情绪趋势</h2></div><span className="status"><i /> News</span></div>
-          <p className="lead">获取 Finviz 的近期金融新闻与博客列表，返回时间、标题、来源和链接。项目示例没有直接返回情绪分数；如需绘制情绪趋势，可在新闻标题与正文之上继续接入情绪分析模型。</p>
+          <p className="lead">获取 <a className="inline-source-link" href={finvizUrl} target="_blank" rel="noreferrer">Finviz ↗</a> 的近期金融新闻与博客列表，返回时间、标题、来源和链接。项目示例没有直接返回情绪分数；如需绘制情绪趋势，可在新闻标题与正文之上继续接入情绪分析模型。</p>
           <div className="code-card tool-code"><div className="code-tabs"><div><button className="selected">Python</button></div><CopyButton value={finvizNewsSnippet} compact /></div><pre><code>{finvizNewsSnippet}</code></pre></div>
         </div>
       </section>

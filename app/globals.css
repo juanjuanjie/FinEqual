@@ -111,6 +111,8 @@ pre { margin:0; padding:20px 22px; overflow:auto; font-size:11.5px; line-height:
 .api-attribution b { color:#746f66; font-size:9px; letter-spacing:.08em; text-transform:uppercase; }
 .api-attribution a { color:#515153; border-bottom:1px solid rgba(185,142,255,.56); transition:color .15s,border-color .15s; }
 .api-attribution a:hover { color:#8f62d6; border-color:#b98eff; }
+.inline-source-link { color:#654c8c; border-bottom:1px solid rgba(185,142,255,.62); font-weight:650; }
+.inline-source-link:hover { color:#8f62d6; border-color:#b98eff; }
 .tool-note { margin:18px 0 0; padding:12px 14px; border-left:3px solid var(--green); background:rgba(185,142,255,.08); color:var(--muted); font-size:11px; line-height:1.7; }
 .tool-code { max-width:780px; }
 h3 { margin:38px 0 14px; font-size:17px; letter-spacing:-.02em; }
