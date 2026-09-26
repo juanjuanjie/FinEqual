@@ -13,7 +13,7 @@ FinEqual 是一个面向中文开发者的免费金融信息 API 聚合与说明
 - 原始页面：[MarketGrep WSB 美股舆情](https://lite.marketgrep.com/zh/wsb)
 - 数据许可：[MarketGrep Rights & Usage](https://lite.marketgrep.com/license/)
 
-### 机构持仓 13F 研究
+### 13F 机构持仓研究
 
 - 机构管理人列表 API
 - 单个机构持仓、季度变化与研究叙事 API

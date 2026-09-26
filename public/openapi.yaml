@@ -57,7 +57,7 @@ paths:
     get:
       summary: 获取精选 13F 机构管理人列表
       operationId: list13FManagers
-      tags: [机构持仓]
+      tags: [13F 机构持仓]
       externalDocs:
         description: MarketGrep 机构持仓 13F 研究原网页
         url: https://lite.marketgrep.com/zh/13f
@@ -76,7 +76,7 @@ paths:
     get:
       summary: 获取单个机构的持仓、季度变化与研究叙事
       operationId: get13FManagerDetail
-      tags: [机构持仓]
+      tags: [13F 机构持仓]
       externalDocs:
         description: MarketGrep 机构持仓 13F 研究原网页
         url: https://lite.marketgrep.com/zh/13f

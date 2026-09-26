@@ -137,9 +137,9 @@ const searchItems = [
   { name: "WSB 美股舆情", meta: "数据类型 · WallStreetBets", href: "#quickstart", keywords: "wsb wallstreetbets reddit marketgrep 美股 舆情 市场情绪" },
   { name: "最新报告 API", meta: "GET · 实时", href: "#daily", keywords: "每日 市场情绪 sentiment report report_events report_markdown" },
   { name: "历史报告 API", meta: "GET · 历史", href: "#history", keywords: "历史索引 历史情绪 历史报告 history runs" },
-  { name: "机构持仓 13F", meta: "数据类型 · 聪明钱", href: "#thirteen-f", keywords: "13f 机构 持仓 基金 sec 聪明钱 marketgrep" },
+  { name: "13F 机构持仓", meta: "数据类型 · 聪明钱", href: "#thirteen-f", keywords: "13f 机构 持仓 基金 sec 聪明钱 marketgrep" },
   { name: "机构列表 API", meta: "GET · 季度", href: "#managers", keywords: "13f managers 机构列表 基金经理" },
-  { name: "机构持仓详情 API", meta: "GET · 季度", href: "#manager-detail", keywords: "13f manager slug holdings 调仓 季度变化 narrative" },
+  { name: "13F 机构持仓详情 API", meta: "GET · 季度", href: "#manager-detail", keywords: "13f manager slug holdings 调仓 季度变化 narrative" },
   { name: "API 收录协议", meta: "OpenAPI 3.1", href: "#standard", keywords: "接入规范 收录标准 协议" },
   { name: "使用须知", meta: "来源 · 授权 · 请求边界", href: "#quality", keywords: "非投资建议 署名 版权 频率 缓存" },
 ];
@@ -192,7 +192,7 @@ export default function Home() {
           <div className="nav-children"><a href="#daily"><span className="method-dot">GET</span> 最新报告</a><a href="#history"><span className="method-dot">GET</span> 历史报告</a></div>
         </details>
         <details className="nav-group" open>
-          <summary>机构持仓</summary>
+          <summary>13F 机构持仓</summary>
           <div className="nav-children"><a href="#managers"><span className="method-dot">GET</span> 机构列表</a><a href="#manager-detail"><span className="method-dot">GET</span> 持仓详情</a></div>
         </details>
         <details className="nav-group" open>
@@ -282,7 +282,7 @@ export default function Home() {
       </section>
 
       <section className="content-section provider-section" id="thirteen-f">
-        <div className="provider-heading"><span className="section-number">02 / 机构持仓</span><div><h2>MarketGrep 机构持仓 13F 研究</h2><p>13F 是管理规模超过 1 亿美元的机构投资者每季度向 SEC 申报的持仓清单。追踪头部基金的持仓如何逐季演变，以及每一步背后的策略，是观察聪明钱真实动向最清晰的窗口之一。</p><div className="source-reference"><span>原网页</span><a href={thirteenFSourceUrl} target="_blank" rel="noreferrer"><strong>MarketGrep 机构持仓 13F 研究</strong><small>MarketGrep</small><b>↗</b></a></div></div></div>
+        <div className="provider-heading"><span className="section-number">02 / 13F 机构持仓</span><div><h2>MarketGrep 机构持仓 13F 研究</h2><p>13F 是管理规模超过 1 亿美元的机构投资者每季度向 SEC 申报的持仓清单。追踪头部基金的持仓如何逐季演变，以及每一步背后的策略，是观察聪明钱真实动向最清晰的窗口之一。</p><div className="source-reference"><span>原网页</span><a href={thirteenFSourceUrl} target="_blank" rel="noreferrer"><strong>MarketGrep 机构持仓 13F 研究</strong><small>MarketGrep</small><b>↗</b></a></div></div></div>
         <div className="intro-grid provider-intro">
           <div><span className="subsection-label">快速开始</span><h3>先选机构，再读取完整持仓</h3><p>先从机构列表取得稳定的 <code>slug</code>，再拼入详情接口。详情响应同时提供 SEC 原始申报链接、逐季持仓变化与研究叙事。</p></div>
           <div className="code-card"><div className="code-tabs"><div>{Object.keys(thirteenFSnippets).map((item) => <button key={item} className={thirteenFLanguage === item ? "selected" : ""} onClick={() => setThirteenFLanguage(item as keyof typeof thirteenFSnippets)}>{item}</button>)}</div><CopyButton value={thirteenFSnippets[thirteenFLanguage]} compact /></div><pre><code>{thirteenFSnippets[thirteenFLanguage]}</code></pre></div>
@@ -321,7 +321,7 @@ export default function Home() {
         </div>
 
         <div className="api-subsection" id="manager-detail">
-          <div className="section-heading"><div><span className="section-number">02.2 / 接口</span><h2>机构持仓详情 API</h2></div><span className="status"><i /> 季度更新</span></div>
+          <div className="section-heading"><div><span className="section-number">02.2 / 接口</span><h2>13F 机构持仓详情 API</h2></div><span className="status"><i /> 季度更新</span></div>
           <p className="lead">按机构 <code>slug</code> 返回完整持仓、环比调仓、历史季度矩阵、策略标签与研究叙事。13F 只覆盖申报范围内的证券，<code>reported_value</code> 不应直接当作机构总资产 AUM。</p>
           <div className="endpoint-bar"><span>GET</span><code>{managerDetailUrl}</code><CopyButton value={managerDetailUrl} compact /></div>
           <div className="path-parameter"><span>路径参数</span><code>slug</code><p>来自机构列表的 <code>managers[].slug</code>，例如 <code>berkshire-hathaway</code>。</p></div>
