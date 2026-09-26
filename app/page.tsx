@@ -61,19 +61,33 @@ console.table(detail.stat.top_holdings.slice(0, 5));`,
   --url ${managersUrl} \\
   --header 'Accept: application/json'`,
 };
-const finvizFinanceSnippet = `# 先在终端运行：pip install finvizfinance
-# 获取单只美股的详情
-from finvizfinance.quote import finvizfinance
+const finvizQuoteSnippet = `from finvizfinance.quote import finvizfinance
 
 stock = finvizfinance("TSLA")
 
+chart = stock.ticker_charts()
 fundamentals = stock.ticker_fundament()
 description = stock.ticker_description()
 peers = stock.ticker_peer()
 etf_holders = stock.ticker_etf_holders()
 ratings = stock.ticker_outer_ratings()
-news = stock.ticker_news()
+stock_news = stock.ticker_news()
 insider_trades = stock.ticker_inside_trader()`;
+const finvizInsiderSnippet = `from finvizfinance.insider import Insider
+
+# 可选：latest、top week、top owner trade
+insider = Insider(option="top owner trade")
+trades = insider.get_insider()
+
+print(trades.head())`;
+const finvizNewsSnippet = `from finvizfinance.news import News
+
+feed = News().get_news()
+news = feed["news"]
+blogs = feed["blogs"]
+
+print(news.head())
+print(blogs.head())`;
 const fields = [
   ["来源", "_license", "string", "数据复用许可摘要；完整条款以 _terms 指向页面为准"],
   ["来源", "_attribution", "string", "展示数据时使用的来源署名文本"],
@@ -150,7 +164,7 @@ const managerDetailFields = [
   ["表现", "cumulative_growth_pct", "number", "页面研究口径下的累计增长比例"],
 ];
 
-const finvizFinanceFeatures = [
+const finvizQuoteFeatures = [
   ["行情图表", "ticker_charts()", "图表", "获取个股在 Finviz 上的价格图表。"],
   ["基本面", "ticker_fundament()", "dict", "公司、市值、估值、盈利、股本与阶段表现等基本面指标。"],
   ["公司资料", "ticker_description()", "string", "获取公司的业务与经营范围描述。"],
@@ -168,8 +182,10 @@ const searchItems = [
   { name: "13F 机构持仓", meta: "数据类型 · 聪明钱", href: "#thirteen-f", keywords: "13f 机构 持仓 基金 sec 聪明钱 marketgrep" },
   { name: "机构列表 API", meta: "GET · 季度", href: "#managers", keywords: "13f managers 机构列表 基金经理" },
   { name: "13F 机构持仓详情 API", meta: "GET · 季度", href: "#manager-detail", keywords: "13f manager slug holdings 调仓 季度变化 narrative" },
-  { name: "美股详情", meta: "开源工具 · Python", href: "#us-stock-detail", keywords: "美股 个股 finviz finvizfinance 基本面 图表 新闻 评级 内部人交易" },
-  { name: "finvizfinance", meta: "Python · MIT", href: "#finvizfinance", keywords: "quote ticker fundament description peer etf holders ratings news insider" },
+  { name: "美股详情", meta: "开源工具 · Python", href: "#us-stock-detail", keywords: "美股 个股 finviz finvizfinance 基本面 图表 新闻 评级 内幕信息" },
+  { name: "股票报价、图表与基本面分析", meta: "Python · Quote", href: "#stock-quote", keywords: "quote ticker chart fundament description ratings 股票报价 图表 基本面" },
+  { name: "内幕信息", meta: "Python · Insider", href: "#insider-information", keywords: "insider 内幕 内部人交易 owner trade" },
+  { name: "新闻与情绪趋势", meta: "Python · News", href: "#news-sentiment", keywords: "news blogs sentiment 新闻 情绪 趋势" },
   { name: "API 收录协议", meta: "OpenAPI 3.1", href: "#standard", keywords: "接入规范 收录标准 协议" },
   { name: "使用须知", meta: "来源 · 授权 · 请求边界", href: "#quality", keywords: "非投资建议 署名 版权 频率 缓存" },
 ];
@@ -227,7 +243,7 @@ export default function Home() {
         </details>
         <details className="nav-group" open>
           <summary>美股详情</summary>
-          <div className="nav-children"><a href="#finvizfinance"><span className="method-dot">PY</span> finvizfinance</a></div>
+          <div className="nav-children"><a href="#stock-quote"><span className="method-dot">PY</span> 股票报价、图表与基本面</a><a href="#insider-information"><span className="method-dot">PY</span> 内幕信息</a><a href="#news-sentiment"><span className="method-dot">PY</span> 新闻与情绪趋势</a></div>
         </details>
         <details className="nav-group" open>
           <summary>维护者指南</summary>
@@ -392,23 +408,34 @@ export default function Home() {
       </section>
 
       <section className="content-section provider-section" id="us-stock-detail">
-        <div className="provider-heading"><span className="section-number">03 / 美股详情</span><div><h2>finvizfinance 美股详情</h2><p>finvizfinance 是一个从 Finviz 获取金融信息的 Python 开源库。输入股票代码后，可以集中读取个股图表、基本面、公司描述、同行公司、ETF 持有者、分析师评级、相关新闻与内部人交易。</p><div className="source-reference"><span>开源项目</span><a href={finvizFinanceRepoUrl} target="_blank" rel="noreferrer"><strong>lit26/finvizfinance</strong><small>GitHub</small><b>↗</b></a></div></div></div>
+        <div className="provider-heading"><span className="section-number">03 / 美股详情</span><div><h2>finvizfinance 美股数据工具</h2><p>finvizfinance 是从 Finviz 获取金融信息的 Python 开源库。本分类按照项目实际能力拆分为三部分：单只股票的报价、图表与基本面分析，全市场内幕交易信息，以及近期金融新闻。</p><div className="source-reference"><span>开源项目</span><a href={finvizFinanceRepoUrl} target="_blank" rel="noreferrer"><strong>lit26/finvizfinance</strong><small>GitHub</small><b>↗</b></a></div></div></div>
+        <div className="endpoint-bar package-bar"><span>PIP</span><code>pip install finvizfinance</code><CopyButton value="pip install finvizfinance" compact /></div>
+        <div className="api-attribution" aria-label="项目资料与许可">
+          <span><b>项目主页</b><a href={finvizFinanceRepoUrl} target="_blank" rel="noreferrer">GitHub · lit26/finvizfinance ↗</a></span>
+          <span><b>官方文档</b><a href={finvizFinanceDocsUrl} target="_blank" rel="noreferrer">Read the Docs ↗</a></span>
+          <span><b>开源许可</b><a href={finvizFinanceLicenseUrl} target="_blank" rel="noreferrer">MIT License ↗</a></span>
+        </div>
+        <p className="tool-note">项目性质：本地安装的 Python 数据采集库，并非 HTTP API。数据来自 Finviz，使用时需同时遵守项目许可证和来源网站条款。</p>
 
-        <div className="api-subsection tool-subsection" id="finvizfinance">
-          <div className="section-heading"><div><span className="section-number">03.1 / 开源工具</span><h2>美股个股信息</h2></div><span className="status"><i /> Python · MIT</span></div>
-          <p className="lead">它不是 HTTP API，而是安装在本地 Python 环境中的数据采集库。项目底层信息来自 Finviz，适合研究脚本、数据分析和原型开发；使用时应同时遵守项目许可证及 Finviz 的网站条款。</p>
-          <div className="endpoint-bar package-bar"><span>PIP</span><code>pip install finvizfinance</code><CopyButton value="pip install finvizfinance" compact /></div>
-          <div className="api-attribution" aria-label="项目资料与许可">
-            <span><b>项目主页</b><a href={finvizFinanceRepoUrl} target="_blank" rel="noreferrer">GitHub · lit26/finvizfinance ↗</a></span>
-            <span><b>官方文档</b><a href={finvizFinanceDocsUrl} target="_blank" rel="noreferrer">Read the Docs ↗</a></span>
-            <span><b>开源许可</b><a href={finvizFinanceLicenseUrl} target="_blank" rel="noreferrer">MIT License ↗</a></span>
-          </div>
-          <div className="intro-grid provider-intro tool-intro">
-            <div><span className="subsection-label">快速开始</span><h3>输入股票代码，读取完整个股资料</h3><p>下面以特斯拉 <code>TSLA</code> 为例。不同方法会返回字典、列表或 Pandas DataFrame，可继续保存为 CSV、接入分析流程或展示在自己的应用中。</p></div>
-            <div className="code-card"><div className="code-tabs"><div><button className="selected">Python</button></div><CopyButton value={finvizFinanceSnippet} compact /></div><pre><code>{finvizFinanceSnippet}</code></pre></div>
-          </div>
-          <h3>可获取的美股详情</h3>
-          <div className="field-table"><div className="field-head"><span>内容</span><span>方法</span><span>返回</span><span>说明</span></div>{finvizFinanceFeatures.map(([scope, name, type, desc]) => <div className="field-row" key={name}><span className="field-scope">{scope}</span><code>{name}</code><span>{type}</span><p>{desc}</p></div>)}</div>
+        <div className="api-subsection tool-subsection" id="stock-quote">
+          <div className="section-heading"><div><span className="section-number">03.1 / 个股</span><h2>股票报价、图表与基本面分析</h2></div><span className="status"><i /> Quote</span></div>
+          <p className="lead">通过股票代码创建个股对象。除了图表与基本面，还能读取公司描述、同行公司、ETF 持有者、外部评级、该股新闻及该股内部人交易。</p>
+          <div className="code-card tool-code"><div className="code-tabs"><div><button className="selected">Python</button></div><CopyButton value={finvizQuoteSnippet} compact /></div><pre><code>{finvizQuoteSnippet}</code></pre></div>
+          <h3>可获取的个股详情</h3>
+          <div className="field-table"><div className="field-head"><span>内容</span><span>方法</span><span>返回</span><span>说明</span></div>{finvizQuoteFeatures.map(([scope, name, type, desc]) => <div className="field-row" key={name}><span className="field-scope">{scope}</span><code>{name}</code><span>{type}</span><p>{desc}</p></div>)}</div>
+        </div>
+
+        <div className="api-subsection tool-subsection" id="insider-information">
+          <div className="section-heading"><div><span className="section-number">03.2 / 市场</span><h2>内幕信息</h2></div><span className="status"><i /> Insider</span></div>
+          <p className="lead">获取 Finviz 汇总的内部人交易记录。可以查看最新交易、近一周重点交易或大股东交易，结果以表格形式返回，常见内容包括股票代码、内部人、关系、交易日期、买卖方向、价格、股数与金额。</p>
+          <div className="code-card tool-code"><div className="code-tabs"><div><button className="selected">Python</button></div><CopyButton value={finvizInsiderSnippet} compact /></div><pre><code>{finvizInsiderSnippet}</code></pre></div>
+          <div className="path-parameter"><span>option 可选值</span><code>latest</code><p><code>top week</code> 查看本周重点交易；<code>top owner trade</code> 查看大股东交易。</p></div>
+        </div>
+
+        <div className="api-subsection tool-subsection" id="news-sentiment">
+          <div className="section-heading"><div><span className="section-number">03.3 / 市场</span><h2>新闻与情绪趋势</h2></div><span className="status"><i /> News</span></div>
+          <p className="lead">获取 Finviz 的近期金融新闻与博客列表，返回时间、标题、来源和链接。项目示例没有直接返回情绪分数；如需绘制情绪趋势，可在新闻标题与正文之上继续接入情绪分析模型。</p>
+          <div className="code-card tool-code"><div className="code-tabs"><div><button className="selected">Python</button></div><CopyButton value={finvizNewsSnippet} compact /></div><pre><code>{finvizNewsSnippet}</code></pre></div>
         </div>
       </section>
 
