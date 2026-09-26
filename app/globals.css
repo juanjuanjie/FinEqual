@@ -120,6 +120,7 @@ pre { margin:0; padding:20px 22px; overflow:auto; font-size:11.5px; line-height:
 h3 { margin:38px 0 14px; font-size:17px; letter-spacing:-.02em; }
 .field-table { border:1px solid var(--line); border-radius:10px; overflow:hidden; background:white; }
 .field-head,.field-row { display:grid; grid-template-columns:.58fr 1.35fr .8fr 2fr; align-items:center; gap:16px; padding:12px 15px; }
+.response-fields .field-head,.response-fields .field-row { grid-template-columns:1.45fr .8fr 2fr; }
 .field-head { background:#f3f6f4; color:#7a8882; font-size:10px; text-transform:uppercase; letter-spacing:.08em; font-weight:700; }
 .field-row { min-height:50px; border-top:1px solid #edf0ee; font-size:12px; }
 .field-row code { color:#086847; font-weight:700; }.field-row>span { color:#7a8882; font-family:var(--font-geist-mono); font-size:11px; }.field-row .field-scope { color:#746f66; font-family:inherit; font-size:9px; font-weight:760; letter-spacing:.08em; text-transform:uppercase; }.field-row p { margin:0; color:#58665f; line-height:1.45; }

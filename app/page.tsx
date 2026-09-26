@@ -288,7 +288,7 @@ export default function Home() {
         <div className="endpoint-bar"><span>GET</span><code>{dailyUrl}</code><CopyButton value={dailyUrl} compact /><OpenEndpointButton href={dailyUrl} /></div>
         <ApiAttribution />
         <h3>响应字段</h3>
-        <div className="field-table"><div className="field-head"><span>分类</span><span>字段</span><span>类型</span><span>说明</span></div>{fields.map(([scope, name, type, desc]) => <div className="field-row" key={name}><span className="field-scope">{scope}</span><code>{name}</code><span>{type}</span><p>{desc}</p></div>)}</div>
+        <div className="field-table response-fields"><div className="field-head"><span>字段</span><span>类型</span><span>说明</span></div>{fields.map(([, name, type, desc]) => <div className="field-row" key={name}><code>{name}</code><span>{type}</span><p>{desc}</p></div>)}</div>
         <h3>最小响应示例</h3>
         <div className="response-card"><div className="response-top"><span><i /> 200 OK</span><span>application/json</span></div><pre><code>{`{
   "report_date": "2026-09-25",
@@ -307,7 +307,7 @@ export default function Home() {
         <div className="endpoint-bar"><span>GET</span><code>{historyUrl}</code><CopyButton value={historyUrl} compact /><OpenEndpointButton href={historyUrl} /></div>
         <ApiAttribution />
         <h3>响应字段</h3>
-        <div className="field-table"><div className="field-head"><span>分类</span><span>字段</span><span>类型</span><span>说明</span></div>{historyFields.map(([scope, name, type, desc]) => <div className="field-row" key={name}><span className="field-scope">{scope}</span><code>{name}</code><span>{type}</span><p>{desc}</p></div>)}</div>
+        <div className="field-table response-fields"><div className="field-head"><span>字段</span><span>类型</span><span>说明</span></div>{historyFields.map(([, name, type, desc]) => <div className="field-row" key={name}><code>{name}</code><span>{type}</span><p>{desc}</p></div>)}</div>
         <h3>最小响应示例</h3>
         <div className="response-card"><div className="response-top"><span><i /> 200 OK</span><span>application/json</span></div><pre><code>{`{
   "_attribution": "MarketGrep (marketgrep.com)",
@@ -350,7 +350,7 @@ export default function Home() {
           <div className="endpoint-bar"><span>GET</span><code>{managersUrl}</code><CopyButton value={managersUrl} compact /><OpenEndpointButton href={managersUrl} /></div>
           <ApiAttribution sourceUrl={thirteenFSourceUrl} sourceLabel="MarketGrep · 机构持仓 13F 研究页面" />
           <h3>响应字段</h3>
-          <div className="field-table"><div className="field-head"><span>分类</span><span>字段</span><span>类型</span><span>说明</span></div>{managerFields.map(([scope, name, type, desc]) => <div className="field-row" key={name}><span className="field-scope">{scope}</span><code>{name}</code><span>{type}</span><p>{desc}</p></div>)}</div>
+          <div className="field-table response-fields"><div className="field-head"><span>字段</span><span>类型</span><span>说明</span></div>{managerFields.map(([, name, type, desc]) => <div className="field-row" key={name}><code>{name}</code><span>{type}</span><p>{desc}</p></div>)}</div>
           <h3>最小响应示例</h3>
           <div className="response-card"><div className="response-top"><span><i /> 200 OK</span><span>application/json</span></div><pre><code>{`{
   "_attribution": "MarketGrep (marketgrep.com)",
@@ -383,7 +383,7 @@ export default function Home() {
           <div className="path-parameter"><span>路径参数</span><code>slug</code><p>来自机构列表的 <code>managers[].slug</code>，例如 <code>berkshire-hathaway</code>。</p></div>
           <ApiAttribution sourceUrl={thirteenFManagerSourceUrl} sourceLabel="MarketGrep · 伯克希尔·哈撒韦 13F 机构详情页" />
           <h3>响应字段</h3>
-          <div className="field-table"><div className="field-head"><span>分类</span><span>字段</span><span>类型</span><span>说明</span></div>{managerDetailFields.map(([scope, name, type, desc]) => <div className="field-row" key={name}><span className="field-scope">{scope}</span><code>{name}</code><span>{type}</span><p>{desc}</p></div>)}</div>
+          <div className="field-table response-fields"><div className="field-head"><span>字段</span><span>类型</span><span>说明</span></div>{managerDetailFields.map(([, name, type, desc]) => <div className="field-row" key={name}><code>{name}</code><span>{type}</span><p>{desc}</p></div>)}</div>
           <h3>最小响应示例</h3>
           <div className="response-card"><div className="response-top"><span><i /> 200 OK</span><span>application/json</span></div><pre><code>{`{
   "manager": {
