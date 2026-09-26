@@ -10,6 +10,9 @@ const thirteenFManagerSourceUrl = "https://lite.marketgrep.com/zh/13f/managers/b
 const managersUrl = "https://lite.marketgrep.com/api/13f/managers";
 const managerDetailUrl = "https://lite.marketgrep.com/api/13f/managers/{slug}";
 const licenseUrl = "https://lite.marketgrep.com/license/";
+const finvizFinanceRepoUrl = "https://github.com/lit26/finvizfinance";
+const finvizFinanceDocsUrl = "https://finvizfinance.readthedocs.io/en/latest/";
+const finvizFinanceLicenseUrl = "https://github.com/lit26/finvizfinance/blob/master/LICENSE";
 const basePath = import.meta.env.BASE_URL === "/" ? "" : import.meta.env.BASE_URL.replace(/\/$/, "");
 const assetPath = (path: string) => `${basePath}${path}`;
 const snippets = {
@@ -58,6 +61,19 @@ console.table(detail.stat.top_holdings.slice(0, 5));`,
   --url ${managersUrl} \\
   --header 'Accept: application/json'`,
 };
+const finvizFinanceSnippet = `# 先在终端运行：pip install finvizfinance
+# 获取单只美股的详情
+from finvizfinance.quote import finvizfinance
+
+stock = finvizfinance("TSLA")
+
+fundamentals = stock.ticker_fundament()
+description = stock.ticker_description()
+peers = stock.ticker_peer()
+etf_holders = stock.ticker_etf_holders()
+ratings = stock.ticker_outer_ratings()
+news = stock.ticker_news()
+insider_trades = stock.ticker_inside_trader()`;
 const fields = [
   ["来源", "_license", "string", "数据复用许可摘要；完整条款以 _terms 指向页面为准"],
   ["来源", "_attribution", "string", "展示数据时使用的来源署名文本"],
@@ -134,6 +150,17 @@ const managerDetailFields = [
   ["表现", "cumulative_growth_pct", "number", "页面研究口径下的累计增长比例"],
 ];
 
+const finvizFinanceFeatures = [
+  ["行情图表", "ticker_charts()", "图表", "获取个股在 Finviz 上的价格图表。"],
+  ["基本面", "ticker_fundament()", "dict", "公司、市值、估值、盈利、股本与阶段表现等基本面指标。"],
+  ["公司资料", "ticker_description()", "string", "获取公司的业务与经营范围描述。"],
+  ["同行公司", "ticker_peer()", "list", "返回同行或可比公司的股票代码。"],
+  ["ETF 持有者", "ticker_etf_holders()", "list", "查看哪些 ETF 持有该股票。"],
+  ["外部评级", "ticker_outer_ratings()", "DataFrame", "整理分析师评级及评级调整记录。"],
+  ["个股新闻", "ticker_news()", "DataFrame", "获取与该股票相关的近期新闻。"],
+  ["内部人交易", "ticker_inside_trader()", "DataFrame", "获取公司内部人的买卖交易记录。"],
+];
+
 const searchItems = [
   { name: "WSB 美股舆情", meta: "数据类型 · WallStreetBets", href: "#quickstart", keywords: "wsb wallstreetbets reddit marketgrep 美股 舆情 市场情绪" },
   { name: "最新报告 API", meta: "GET · 实时", href: "#daily", keywords: "每日 市场情绪 sentiment report report_events report_markdown" },
@@ -141,6 +168,8 @@ const searchItems = [
   { name: "13F 机构持仓", meta: "数据类型 · 聪明钱", href: "#thirteen-f", keywords: "13f 机构 持仓 基金 sec 聪明钱 marketgrep" },
   { name: "机构列表 API", meta: "GET · 季度", href: "#managers", keywords: "13f managers 机构列表 基金经理" },
   { name: "13F 机构持仓详情 API", meta: "GET · 季度", href: "#manager-detail", keywords: "13f manager slug holdings 调仓 季度变化 narrative" },
+  { name: "美股详情", meta: "开源工具 · Python", href: "#us-stock-detail", keywords: "美股 个股 finviz finvizfinance 基本面 图表 新闻 评级 内部人交易" },
+  { name: "finvizfinance", meta: "Python · MIT", href: "#finvizfinance", keywords: "quote ticker fundament description peer etf holders ratings news insider" },
   { name: "API 收录协议", meta: "OpenAPI 3.1", href: "#standard", keywords: "接入规范 收录标准 协议" },
   { name: "使用须知", meta: "来源 · 授权 · 请求边界", href: "#quality", keywords: "非投资建议 署名 版权 频率 缓存" },
 ];
@@ -197,6 +226,10 @@ export default function Home() {
           <div className="nav-children"><a href="#managers"><span className="method-dot">GET</span> 机构列表</a><a href="#manager-detail"><span className="method-dot">GET</span> 持仓详情</a></div>
         </details>
         <details className="nav-group" open>
+          <summary>美股详情</summary>
+          <div className="nav-children"><a href="#finvizfinance"><span className="method-dot">PY</span> finvizfinance</a></div>
+        </details>
+        <details className="nav-group" open>
           <summary>维护者指南</summary>
           <div className="nav-children"><a href="#standard">API 收录协议</a><a href="#quality">使用须知</a></div>
         </details>
@@ -217,7 +250,7 @@ export default function Home() {
         <h1>让金融信息 <span>不再有门槛</span></h1>
         <p className="hero-copy">免费金融信息 API 聚合平台。为中文开发者筛选开放、实用的数据接口，并提供清晰的字段说明与可直接运行的示例。</p>
         <div className="hero-actions"><a className="primary-button" href="#quickstart">开始调用 <span>→</span></a><a className="secondary-button" href={assetPath("/openapi.yaml")} download>下载 OpenAPI 规范</a></div>
-        <div className="stats"><div><strong>2</strong><span>已收录数据类型</span></div><div><strong>4</strong><span>免费 API 接口</span></div><div><strong>0</strong><span>所需 API Key</span></div></div>
+        <div className="stats"><div><strong>3</strong><span>已收录数据类型</span></div><div><strong>4</strong><span>免费 API 接口</span></div><div><strong>1</strong><span>开源 Python 工具</span></div></div>
       </section>
 
       <section className="content-section provider-section" id="quickstart">
@@ -358,8 +391,29 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="content-section provider-section" id="us-stock-detail">
+        <div className="provider-heading"><span className="section-number">03 / 美股详情</span><div><h2>finvizfinance 美股详情</h2><p>finvizfinance 是一个从 Finviz 获取金融信息的 Python 开源库。输入股票代码后，可以集中读取个股图表、基本面、公司描述、同行公司、ETF 持有者、分析师评级、相关新闻与内部人交易。</p><div className="source-reference"><span>开源项目</span><a href={finvizFinanceRepoUrl} target="_blank" rel="noreferrer"><strong>lit26/finvizfinance</strong><small>GitHub</small><b>↗</b></a></div></div></div>
+
+        <div className="api-subsection tool-subsection" id="finvizfinance">
+          <div className="section-heading"><div><span className="section-number">03.1 / 开源工具</span><h2>美股个股信息</h2></div><span className="status"><i /> Python · MIT</span></div>
+          <p className="lead">它不是 HTTP API，而是安装在本地 Python 环境中的数据采集库。项目底层信息来自 Finviz，适合研究脚本、数据分析和原型开发；使用时应同时遵守项目许可证及 Finviz 的网站条款。</p>
+          <div className="endpoint-bar package-bar"><span>PIP</span><code>pip install finvizfinance</code><CopyButton value="pip install finvizfinance" compact /></div>
+          <div className="api-attribution" aria-label="项目资料与许可">
+            <span><b>项目主页</b><a href={finvizFinanceRepoUrl} target="_blank" rel="noreferrer">GitHub · lit26/finvizfinance ↗</a></span>
+            <span><b>官方文档</b><a href={finvizFinanceDocsUrl} target="_blank" rel="noreferrer">Read the Docs ↗</a></span>
+            <span><b>开源许可</b><a href={finvizFinanceLicenseUrl} target="_blank" rel="noreferrer">MIT License ↗</a></span>
+          </div>
+          <div className="intro-grid provider-intro tool-intro">
+            <div><span className="subsection-label">快速开始</span><h3>输入股票代码，读取完整个股资料</h3><p>下面以特斯拉 <code>TSLA</code> 为例。不同方法会返回字典、列表或 Pandas DataFrame，可继续保存为 CSV、接入分析流程或展示在自己的应用中。</p></div>
+            <div className="code-card"><div className="code-tabs"><div><button className="selected">Python</button></div><CopyButton value={finvizFinanceSnippet} compact /></div><pre><code>{finvizFinanceSnippet}</code></pre></div>
+          </div>
+          <h3>可获取的美股详情</h3>
+          <div className="field-table"><div className="field-head"><span>内容</span><span>方法</span><span>返回</span><span>说明</span></div>{finvizFinanceFeatures.map(([scope, name, type, desc]) => <div className="field-row" key={name}><span className="field-scope">{scope}</span><code>{name}</code><span>{type}</span><p>{desc}</p></div>)}</div>
+        </div>
+      </section>
+
       <section className="content-section standard-section" id="standard">
-        <span className="section-number">03 / 收录协议</span><h2>以后新增 API，都按同一套标准</h2>
+        <span className="section-number">04 / 收录协议</span><h2>以后新增 API，都按同一套标准</h2>
         <p className="lead">本站采用 <strong>OpenAPI 3.1</strong> 描述 HTTP 接口，并用 JSON Schema 定义响应结构。这是行业通用规范，可继续生成文档、客户端和测试，而不是自创格式。</p>
         <div className="principles">
           <article><b>1</b><h3>身份明确</h3><p>写清数据提供方、原始地址、授权方式、许可协议与署名要求。</p></article>
@@ -371,7 +425,7 @@ export default function Home() {
       </section>
 
       <section className="content-section quality" id="quality">
-        <div><span className="section-number">04 / 使用须知</span><h2>数据有来源，使用有边界</h2></div>
+        <div><span className="section-number">05 / 使用须知</span><h2>数据有来源，使用有边界</h2></div>
         <div className="quality-list"><p><strong>非投资建议</strong><span>聚合数据与自动生成内容可能存在延迟、遗漏或偏差，不应单独作为交易依据。</span></p><p><strong>遵守来源许可</strong><span>不同数据源的授权范围、署名和使用要求可能不同，请以对应接口详情及原网站条款为准。</span></p><p><strong>合理请求</strong><span>遵守各数据源的访问限制，避免高频轮询；生产环境建议缓存结果，并为失败请求设置退避重试。</span></p></div>
       </section>
 
